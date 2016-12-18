@@ -8,6 +8,7 @@ git:
 env:
   global:
     - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-progress --optimize-autoloader"
+    - TASK_LINT=1
     - TASK_TESTS=0
     - TASK_TESTS_COVERAGE=0
     - TASK_CS=0
@@ -66,6 +67,9 @@ install:
   - composer info -D
 
 script:
+  # Tasks: lint sources
+  - if [ $TASK_LINT == 1 ]; then composer test:php-lint
+
   # Tasks: unit test without coverage
   - if [ $TASK_TESTS == 1 ] && [ $TASK_TESTS_COVERAGE == 0 ]; then vendor/bin/phpunit --verbose; fi
   # Tasks: unit test with coverage
