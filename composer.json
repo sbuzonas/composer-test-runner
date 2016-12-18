@@ -19,8 +19,7 @@
         "phpunit/phpunit": "For running PHPUnit tests"
     },
     "require": {
-        "composer-plugin-api": "^1.0",
-        "sbuzonas/composer-test-runner": "~1.0@dev"
+        "composer-plugin-api": "^1.0"
     },
     "require-dev": {
         "composer/composer": "^1.2",
