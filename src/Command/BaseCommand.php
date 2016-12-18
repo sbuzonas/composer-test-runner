@@ -63,6 +63,14 @@ abstract class BaseCommand extends ComposerCommand
     private function getComposerPackage($name, $constraint = '*')
     {
         $localRepo = $this->getComposer()->getRepositoryManager()->getLocalRepository();
-        return $localRepo->findPackage($name, $constraint);
+        $package = $localRepo->findPackage($name, $constraint);
+
+        if (!$package) {
+            $globalComposer = $this->getComposer()->getPluginManager()->getGlobalComposer();
+            $globalRepo = $globalComposer->getRepositoryManager()->getLocalRepository();
+            $package = $globalRepo->findPackage($name, $constraint);
+        }
+
+        return $package;
     }
 }
