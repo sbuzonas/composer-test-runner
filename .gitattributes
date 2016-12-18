@@ -1,0 +1,24 @@
+[attr]generated -diff -merge
+[attr]sources   text eol=lf whitespace=blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent,tabwidth=4
+[attr]config    text eol=lf whitespace=blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent,tabwidth=2
+[attr]docs      text eol=lf whitespace=blank-at-eol,blank-at-eof
+
+# Auto-detect text files, ensure they use LF.
+*       text=auto eol=lf
+
+# Configuration files
+*.json  config
+
+# Documentation files
+*.md    docs
+
+# Source code files
+*.php   sources diff=php
+
+# Generated files
+composer.lock generated diff=composerlock
+
+# Ignore these files in GitHub dists and `git archive` actions.
+.editorconfig  export-ignore
+.gitattributes export-ignore
+.gitignore     export-ignore

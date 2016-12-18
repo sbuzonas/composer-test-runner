@@ -1,0 +1,30 @@
+{
+    "name": "sbuzonas/composer-test-runner",
+    "description": "Composer plugin for running tests against the root package",
+    "type": "composer-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Steve Buzonas",
+            "email": "steve@fancyguy.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "SLB\\Composer\\TestRunner\\": "src/"
+        }
+    },
+    "require": {
+        "composer-plugin-api": "^1.0",
+        "sbuzonas/composer-test-runner": "~1.0@dev"
+    },
+    "require-dev": {
+        "composer/composer": "^1.2"
+    },
+    "extra": {
+        "class": "SLB\\Composer\\TestRunner\\Plugin",
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
