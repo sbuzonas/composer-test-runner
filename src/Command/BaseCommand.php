@@ -6,9 +6,12 @@ use Composer\Command\BaseCommand as ComposerCommand;
 use Composer\Factory;
 use Composer\Util\Filesystem;
 use Composer\Util\ProcessExecutor;
+use SLB\Composer\TestRunner\Util\PackageManager;
 
 abstract class BaseCommand extends ComposerCommand
 {
+
+    private $packageManager;
 
     protected function getRootPackagePath()
     {
@@ -25,52 +28,22 @@ abstract class BaseCommand extends ComposerCommand
         return rtrim($relativePath, DIRECTORY_SEPARATOR);
     }
 
-    protected function enableOptionalPackage($name, $constraint = '*')
+    protected function loadRuntimeDependency($name, $constraint = '*')
     {
-        if (!$package = $this->getComposerPackage($name, $constraint)) {
-            if ('*' !== $constraint) {
-                $name = sprintf('%s:%s', $name, $constraint);
-            }
-
-            throw new \UnexpectedValueException(sprintf('The "%s" command depends on "%s" which could not be loaded.', $this->getName(), $name));
-        }
-
-        $pm = $this->getComposer()->getPluginManager();
-
-        // HACK: Composer expects packages registered in the PluginManager to
-        // be plugins themselves, we want to optionally autoload extra
-        // dependencies if they are available
-        $extra = $package->getExtra();
-        if (empty($extra['class'])) {
-            $prefix = $classDummy = '_dummy';
-            $dummyCounter = 0;
-            // Find a unique unloaded class name so we can fail to load it
-            while (class_exists($classDummy, false)) {
-                $classDummy = sprintf('%s_%d', $prefix, $dummyCounter++);
-            }
-            $extra['class'] = $classDummy;
-            $package->setExtra($extra);
-        }
-
-        $pm->registerPackage($package);
+        $this->getPackageManager()->registerPackage($name, $constraint);
     }
 
     protected function isPackageInstalled($name, $constraint = '*')
     {
-        return null !== $this->getComposerPackage($name, $constraint);
+        return $this->getPackageManager()->isPackageInstalled($name, $constraint);
     }
 
-    private function getComposerPackage($name, $constraint = '*')
+    protected function getPackageManager()
     {
-        $localRepo = $this->getComposer()->getRepositoryManager()->getLocalRepository();
-        $package = $localRepo->findPackage($name, $constraint);
-
-        if (!$package) {
-            $globalComposer = $this->getComposer()->getPluginManager()->getGlobalComposer();
-            $globalRepo = $globalComposer->getRepositoryManager()->getLocalRepository();
-            $package = $globalRepo->findPackage($name, $constraint);
+        if (!$this->packageManager) {
+            $this->packageManager = new PackageManager($this->getComposer());
         }
 
-        return $package;
+        return $this->packageManager;
     }
 }

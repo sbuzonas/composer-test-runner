@@ -32,7 +32,7 @@ class LintCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->enableOptionalPackage('jakub-onderka/php-parallel-lint', '^0.9');
+        $this->loadRuntimeDependency('jakub-onderka/php-parallel-lint', '^0.9');
 
         $manager = new Manager;
         $result = $manager->run($this->getSettings($input));

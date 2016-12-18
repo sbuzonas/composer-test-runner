@@ -2,6 +2,7 @@
 
 namespace SLB\Composer\TestRunner\Command;
 
+use SLB\Composer\TestRunner\Util\PackageManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,9 +22,12 @@ class PHPUnitCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->enableOptionalPackage('phpunit/phpunit', '^4.5 || ^5.0.5');
+        $this->loadRuntimeDependency('phpunit/phpunit', '^4.5 || ^5.0.5');
 
         $runner = new \PHPUnit_TextUI_Command;
+
+        $reflector = new \ReflectionClass($runner);
+        var_dump($reflector->getFileName());
 
         $settings = $this->getSettings($input, $output);
 
