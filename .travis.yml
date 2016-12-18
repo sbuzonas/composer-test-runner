@@ -1,0 +1,75 @@
+language: php
+
+sudo: false
+
+git:
+  depth: 5
+
+env:
+  global:
+    - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-progress --optimize-autoloader"
+    - TASK_TESTS=1
+    - TASK_TESTS_COVERAGE=0
+    - TASK_CS=1
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.0
+      env: TASK_TESTS_COVERAGE=1
+    - php: 7.0
+      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
+    - php: 7.1
+    - php: nightly
+    # Use the newer stack for HHVM
+    - php:   hhvm-stable
+      sudo:  required
+      dist:  trusty
+      group: edge
+      env: COMPOSER_FLAGS="--ignore-platform-reqs"
+  allow_failures:
+    - php: nightly
+      env: TASK_CS=0
+    - php: hhvm-stable
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_install:
+  # Configure: check phpdbg
+  - phpdbg --version 2> /dev/null || { echo 'No phpdbg'; export TASK_TESTS_COVERAGE=0; }
+
+  # Configure: turn off XDebug
+  - phpenv config-rm xdebug.ini || return 0
+
+  # Tasks: validate tasks configuration
+  - if [ $TASK_TESTS == 0 ] && [ $TASK_TESTS_COVERAGE == 1]; then travis_terminate 1; fi
+
+  # Tasks: tags don't need coverage or cs-fix
+  - if [ $TRAVIS_TAG ]; then export TASK_TESTS_COVERAGE=0; fi
+  - if [ $TRAVIS_TAG ]; then export TASK_CS=0; fi
+
+  # Composer: parallel install plugin
+  - travis_retry composer global require $DEFAULT_COMPOSER_FLAGS hirak/prestissimo
+
+  # Debug: display task configuration
+  - set | grep ^TASK | sort
+
+install:
+  # Configure: install dependencies
+  - travis_retry composer update $DEFAULT_COMPOSER_FLAGS $COMPOSER_FLAGS
+  # Debug: show direct composer dependencies
+  - composer info -D
+
+script:
+  # Tasks: unit test without coverage
+  - if [ $TASK_TESTS == 1 ] && [ $TASK_TESTS_COVERAGE == 0 ]; then vendor/bin/phpunit --verbose; fi
+  # Tasks: unit test with coverage
+  - if [ $TASK_TESTS == 1 ] && [ $TASK_TESTS_COVERAGE == 1 ]; then phpdbg -qrr vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml; fi
+
+  # Tasks: coding style
+  - if [ $TASK_CS == 1 ]; then vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run --using-cache=no --path-mode=intersection `git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE`; fi
+
+after_success:
+  - if [ $TASK_TESTS_COVERAGE == 1 ]; then vendor/bin/coveralls -v; fi
