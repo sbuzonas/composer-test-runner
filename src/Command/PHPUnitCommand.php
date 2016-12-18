@@ -26,9 +26,6 @@ class PHPUnitCommand extends BaseCommand
 
         $runner = new \PHPUnit_TextUI_Command;
 
-        $reflector = new \ReflectionClass($runner);
-        var_dump($reflector->getFileName());
-
         $settings = $this->getSettings($input, $output);
 
         $runner->run($settings, false);
