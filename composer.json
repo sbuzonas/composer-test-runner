@@ -15,7 +15,8 @@
         }
     },
     "suggest": {
-        "jakub-onderka/php-parallel-lint:^0.9": "For linting PHP sources"
+        "jakub-onderka/php-parallel-lint": "For linting PHP sources",
+        "phpunit/phpunit": "For running PHPUnit tests"
     },
     "require": {
         "composer-plugin-api": "^1.0",
@@ -23,7 +24,8 @@
     },
     "require-dev": {
         "composer/composer": "^1.2",
-        "jakub-onderka/php-parallel-lint": "^0.9"
+        "jakub-onderka/php-parallel-lint": "^0.9",
+        "phpunit/phpunit": "^4.5 || ^5.0.5"
     },
     "extra": {
         "class": "SLB\\Composer\\TestRunner\\Plugin",

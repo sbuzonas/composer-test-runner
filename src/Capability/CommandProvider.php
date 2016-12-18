@@ -20,6 +20,7 @@ class CommandProvider implements CommandProviderInterface
     {
         return array(
             new Command\LintCommand,
+            new Command\PHPUnitCommand,
         );
     }
 }
