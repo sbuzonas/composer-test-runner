@@ -62,9 +62,7 @@ class LintCommand extends BaseCommand
             return array_merge($a, array_values((array) $b));
         }, array());
 
-        $relativePaths = array_map(function ($path) {
-                return $this->makePathRelativeToRoot($path);
-        }, $paths);
+        $relativePaths = array_map(array($this, 'makePathRelativeToRoot'), $paths);
 
         return array_unique($relativePaths);
     }
