@@ -12,12 +12,14 @@
 namespace SLB\Composer\TestRunner\Capability;
 
 use Composer\Plugin\Capability\CommandProvider as CommandProviderInterface;
+use SLB\Composer\TestRunner\Command;
 
 class CommandProvider implements CommandProviderInterface
 {
     public function getCommands()
     {
         return array(
+            new Command\LintCommand,
         );
     }
 }

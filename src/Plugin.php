@@ -12,7 +12,9 @@
 namespace SLB\Composer\TestRunner;
 
 use Composer\Composer;
+use Composer\Factory;
 use Composer\IO\IOInterface;
+use Composer\Json\JsonFile;
 use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
 
@@ -36,7 +38,7 @@ class Plugin implements PluginInterface, Capable
         }
 
         return array(
-            'Composer\Plugin\Capability\CommandProvider' => 'SLB\Composer\Capability\CommandProvider',
+            'Composer\Plugin\Capability\CommandProvider' => 'SLB\Composer\TestRunner\Capability\CommandProvider',
         );
     }
 

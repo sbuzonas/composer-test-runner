@@ -14,12 +14,16 @@
             "SLB\\Composer\\TestRunner\\": "src/"
         }
     },
+    "suggest": {
+        "jakub-onderka/php-parallel-lint:^0.9": "For linting PHP sources"
+    },
     "require": {
         "composer-plugin-api": "^1.0",
         "sbuzonas/composer-test-runner": "~1.0@dev"
     },
     "require-dev": {
-        "composer/composer": "^1.2"
+        "composer/composer": "^1.2",
+        "jakub-onderka/php-parallel-lint": "^0.9"
     },
     "extra": {
         "class": "SLB\\Composer\\TestRunner\\Plugin",
