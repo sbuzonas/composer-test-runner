@@ -1,5 +1,7 @@
 /vendor/
 composer.lock
 
+.travis-build.sh
+
 .php_cs
 .php_cs.cache
