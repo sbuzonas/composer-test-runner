@@ -21,6 +21,9 @@ class CommandProvider implements CommandProviderInterface
         return array(
             new Command\LintCommand,
             new Command\PHPUnitCommand,
+            new Command\CodeSnifferCommand,
+            new Command\CodeSnifferCheckCommand,
+            new Command\CodeSnifferFixCommand,
         );
     }
 }

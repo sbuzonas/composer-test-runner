@@ -37,7 +37,7 @@ class PackageManager
         }
 
         $autoloadPackages = array($package->getName() => $package);
-        $autoloadPackages = $this->resolveDependencies($pool, $autoloadPackages, $package);
+        $autoloadPackages = $this->resolveDependencies($pool, $autoloadPackages, $package, true);
 
         $generator = $this->composer->getAutoloadGenerator();
         $autoloads = array();
@@ -47,13 +47,23 @@ class PackageManager
         }
 
         $map = $generator->parseAutoloads($autoloads, new Package('dummy', '1.0.0.0', '1.0.0'));
+
         $classLoader = $generator->createLoader($map);
         $classLoader->register(true);
     }
 
-    private function resolveDependencies(Pool $pool, array $collected, PackageInterface $package)
+    private function resolveDependencies(Pool $pool, array $collected, PackageInterface $package, $withDevDependencies = false)
     {
-        foreach ($package->getRequires() as $requireLink) {
+        $requiredPackages = $package->getRequires();
+
+        if ($withDevDependencies) {
+            $requiredPackages = array_merge(
+                $requiredPackages,
+                $package->getDevRequires()
+            );
+        }
+
+        foreach ($requiredPackages as $requireLink) {
             $requiredPackage = $this->getPackage($requireLink->getTarget(), $requireLink->getConstraint());
             if ($requiredPackage && !isset($collected[$requiredPackage->getName()])) {
                 $collected[$requiredPackage->getName()] = $requiredPackage;
