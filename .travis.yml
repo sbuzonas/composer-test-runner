@@ -7,7 +7,6 @@ git:
 
 env:
   global:
-    - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-progress --optimize-autoloader"
     - COMPOSER_PACKAGE_NAME="sbuzonas/composer-test-runner"
     - COMPOSER_TEST_RUNNER_VERSION="^1.0@dev"
     - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-progress --optimize-autoloader"
@@ -85,6 +84,9 @@ script:
   - if [ $TASK_TESTS == 1 ] && [ $TASK_TESTS_COVERAGE == 0 ]; then vendor/bin/phpunit --verbose; fi
   # Tasks: unit test with coverage
   - if [ $TASK_TESTS == 1 ] && [ $TASK_TESTS_COVERAGE == 1 ]; then phpdbg -qrr vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml; fi
+
+  # Tasks: code sniffer
+  - if [ $TASK_CODE_SNIFFER == 1 ]; then composer test:code-sniffer; fi
 
   # Tasks: coding style
   - if [ $TASK_CS == 1 ]; then vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run --using-cache=no --path-mode=intersection `git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE`; fi
