@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the "sbuzonas/composer-test-runner" package.
+ *
+ * Copyright (c) 2016 Steve Buzonas <steve@fancyguy.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace SLB\Composer\TestRunner\Util;
 
 use Composer\Composer;
@@ -9,7 +18,6 @@ use Composer\Package\PackageInterface;
 
 class PackageManager
 {
-
     /**
      * @var Composer
      */
@@ -43,7 +51,7 @@ class PackageManager
         $autoloads = array();
         foreach ($autoloadPackages as $autoloadPackage) {
             $downloadPath = $this->getInstallPath($autoloadPackage, ($globalRepo && $globalRepo->hasPackage($autoloadPackage)));
-            $autoloads[] = array($autoloadPackage, $downloadPath);
+            $autoloads[]  = array($autoloadPackage, $downloadPath);
         }
 
         $map = $generator->parseAutoloads($autoloads, new Package('dummy', '1.0.0.0', '1.0.0'));
@@ -65,9 +73,9 @@ class PackageManager
 
         foreach ($requiredPackages as $requireLink) {
             $requiredPackage = $this->getPackage($requireLink->getTarget(), $requireLink->getConstraint());
-            if ($requiredPackage && !isset($collected[$requiredPackage->getName()])) {
+            if ($requiredPackage && ! isset($collected[$requiredPackage->getName()])) {
                 $collected[$requiredPackage->getName()] = $requiredPackage;
-                $collected = $this->resolveDependencies($pool, $collected, $requiredPackage);
+                $collected                              = $this->resolveDependencies($pool, $collected, $requiredPackage);
             }
         }
 
@@ -78,7 +86,7 @@ class PackageManager
     {
         $package = $this->getLocalInstalledRepository()->findPackage($name, $constraint);
 
-        if (!$package && $this->getGlobalComposer()) {
+        if ( ! $package && $this->getGlobalComposer()) {
             $package = $this->getGlobalInstalledRepository()->findPackage($name, $constraint);
         }
 
@@ -107,7 +115,7 @@ class PackageManager
 
     private function getInstallPath(PackageInterface $package, $global = false)
     {
-        if (!$global) {
+        if ( ! $global) {
             return $this->composer->getInstallationManager()->getInstallPath($package);
         }
 

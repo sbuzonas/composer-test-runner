@@ -19,11 +19,11 @@ class CommandProvider implements CommandProviderInterface
     public function getCommands()
     {
         return array(
-            new Command\LintCommand,
-            new Command\PHPUnitCommand,
-            new Command\CodeSnifferCommand,
-            new Command\CodeSnifferCheckCommand,
-            new Command\CodeSnifferFixCommand,
+            new Command\LintCommand(),
+            new Command\PHPUnitCommand(),
+            new Command\CodeSnifferCommand(),
+            new Command\CodeSnifferCheckCommand(),
+            new Command\CodeSnifferFixCommand(),
         );
     }
 }

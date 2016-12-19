@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the "sbuzonas/composer-test-runner" package.
+ *
+ * Copyright (c) 2016 Steve Buzonas <steve@fancyguy.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace SLB\Composer\TestRunner\Command;
 
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,8 +18,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CodeSnifferCommand extends BaseCommand
 {
-
     private $diffFile;
+
+    public function isEnabled()
+    {
+        return $this->isPackageInstalled('squizlabs/php_codesniffer', '^2.7.1');
+    }
 
     protected function configure()
     {
@@ -72,11 +85,11 @@ class CodeSnifferCommand extends BaseCommand
 
         if ($input->hasOption('fix') && $input->getOption('fix') && defined('PHP_CODESNIFFER_CBF') === false) {
             define('PHP_CODESNIFFER_CBF', true);
-        } else if (defined('PHP_CODESNIFFER_CBF') === false) {
+        } elseif (defined('PHP_CODESNIFFER_CBF') === false) {
             define('PHP_CODESNIFFER_CBF', false);
         }
 
-        $runner = new \PHP_CodeSniffer_CLI;
+        $runner    = new \PHP_CodeSniffer_CLI();
         $numErrors = $runner->process($settings);
 
         // TODO: Exit code?
@@ -86,14 +99,9 @@ class CodeSnifferCommand extends BaseCommand
         }
     }
 
-    public function isEnabled()
-    {
-        return $this->isPackageInstalled('squizlabs/php_codesniffer', '^2.7.1');
-    }
-
     protected function applyPatch()
     {
-        if (!$this->diffFile) {
+        if ( ! $this->diffFile) {
             return;
         }
 
@@ -102,7 +110,7 @@ class CodeSnifferCommand extends BaseCommand
         }
 
         // TODO: ProcessExecutor
-        $cmd = "patch -p0 -ui \"$this->diffFile\"";
+        $cmd    = "patch -p0 -ui \"$this->diffFile\"";
         $output = array();
         $retVal = null;
         exec($cmd, $output, $retVal);
@@ -111,7 +119,7 @@ class CodeSnifferCommand extends BaseCommand
         } else {
             // FIXME: use output
             print_r($output);
-            echo "Returned: $retVal".PHP_EOL;
+            echo "Returned: $retVal" . PHP_EOL;
         }
 
         unlink($this->diffFile);
@@ -169,7 +177,7 @@ class CodeSnifferCommand extends BaseCommand
 
         foreach ($sniffs as $sniff) {
             if ('-' === $sniff[0]) {
-                $settings['exclude'] = substr($sniff, 1);
+                $settings['exclude'] = mb_substr($sniff, 1);
             } else {
                 $settings['sniffs'] = $sniff;
             }
@@ -182,7 +190,7 @@ class CodeSnifferCommand extends BaseCommand
         }
 
         if ($input->hasOption('print-style') && $input->hasParameterOption('--print-style')) {
-            $styleFormat =  $input->getOption('print-style') ?: 'Text';
+            $styleFormat           =  $input->getOption('print-style') ?: 'Text';
             $settings['generator'] = $styleFormat;
         }
 
@@ -196,7 +204,7 @@ class CodeSnifferCommand extends BaseCommand
 
         $settings['bootstrap'] = $input->getOption('bootstrap');
 
-        $settings['errorSeverity'] = $input->getOption('error-severity');
+        $settings['errorSeverity']   = $input->getOption('error-severity');
         $settings['warningSeverity'] = $input->getOption('warning-severity');
 
         if ($input->getOption('suppress-warnings')) {
@@ -213,7 +221,6 @@ class CodeSnifferCommand extends BaseCommand
 
         // Override some of the settings that might break fixes.
         if ($input->hasOption('fix') && $input->getOption('fix')) {
-
             $settings['verbosity']    = 0;
             $settings['showProgress'] = false;
             $settings['generator']    = '';
@@ -224,10 +231,10 @@ class CodeSnifferCommand extends BaseCommand
             $settings['reports']      = array();
 
             if (empty($settings['suffix']) && empty($settings['no-patch'])) {
-                $this->diffFile = tempnam(sys_get_temp_dir(), 'phpcbf-');
+                $this->diffFile      = tempnam(sys_get_temp_dir(), 'phpcbf-');
                 $settings['reports'] = array('diff' => $this->diffFile);
             } else {
-                $settings['reports'] = array('cbf' => null);
+                $settings['reports']       = array('cbf' => null);
                 $settings['phpcbf-suffix'] = isset($settings['suffix']) ? $settings['suffix'] : '';
             }
         }

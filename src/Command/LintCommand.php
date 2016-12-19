@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the "sbuzonas/composer-test-runner" package.
+ *
+ * Copyright (c) 2016 Steve Buzonas <steve@fancyguy.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace SLB\Composer\TestRunner\Command;
 
 use JakubOnderka\PhpParallelLint\Manager;
@@ -11,6 +20,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LintCommand extends BaseCommand
 {
+    public function isEnabled()
+    {
+        return $this->isPackageInstalled('jakub-onderka/php-parallel-lint', '^0.9');
+    }
 
     protected function configure()
     {
@@ -34,13 +47,8 @@ class LintCommand extends BaseCommand
     {
         $this->loadRuntimeDependency('jakub-onderka/php-parallel-lint', '^0.9');
 
-        $manager = new Manager;
-        $result = $manager->run($this->getSettings($input));
-    }
-
-    public function isEnabled()
-    {
-        return $this->isPackageInstalled('jakub-onderka/php-parallel-lint', '^0.9');
+        $manager = new Manager();
+        $result  = $manager->run($this->getSettings($input));
     }
 
     protected function getPackagePaths()
@@ -48,7 +56,7 @@ class LintCommand extends BaseCommand
         $package = $this->getComposer()->getPackage();
 
         $generator = $this->getComposer()->getAutoloadGenerator();
-        $map = $generator->parseAutoloads(array(
+        $map       = $generator->parseAutoloads(array(
             array($package, $this->getRootPackagePath()),
         ), $package);
 
@@ -78,7 +86,7 @@ class LintCommand extends BaseCommand
 
     private function getSettings(InputInterface $input)
     {
-        $settings = new Settings;
+        $settings = new Settings();
 
         if ($phpExecutable = $input->getOption('php')) {
             $settings->phpExecutable = $input->getOption('php');
@@ -96,7 +104,7 @@ class LintCommand extends BaseCommand
 
         $settings->extensions = $input->getOption('extensions');
 
-        $exclude = array_merge($input->getOption('exclude'), $this->getPackageExcludes());
+        $exclude            = array_merge($input->getOption('exclude'), $this->getPackageExcludes());
         $settings->excluded = $exclude;
 
         if ($input->hasOption('ansi') && $input->getOption('ansi')) {
